@@ -1,0 +1,44 @@
+---
+title: "Happy birthday!"
+author: "Chris Berg"
+date: "5/27/2020"
+output: html_document
+compact-title: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load( tidyverse ,
+                sf ,
+                maps ,
+                leaflet)
+```
+
+
+```{r map, echo=F}
+world  = 
+  st_as_sf(map("world", plot = FALSE, fill = TRUE)) %>% 
+  st_transform( crs = 4326 )
+
+proj_crs = st_crs(world)
+
+world_sf = 
+  data.frame(redd = 50 , long = -123.5 , lat = 46) %>% 
+  st_as_sf( coords = c("long","lat") ,
+            crs = 4326 )
+
+
+world_sf %>% 
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>% 
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addCircleMarkers( radius = ~redd , 
+                    popup = ~paste0( "Ticket:",
+                                    "<br>", "<a href='https://raw.githubusercontent.com/rcberg/birthday/master/rachael-trip.png'>Link</a>" 
+                                    ),
+                    color = 'red' , 
+                    stroke = F ) %>%
+  setView(lng = -123.5 , lat = 46 , zoom = 9)
+```
